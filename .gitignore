@@ -1,0 +1,2 @@
+# Ignore all python virtual environment directories
+env/
