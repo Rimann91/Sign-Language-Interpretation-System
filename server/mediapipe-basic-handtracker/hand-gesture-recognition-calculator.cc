@@ -155,14 +155,15 @@ REGISTER_CALCULATOR(HandGestureRecognitionCalculator);
         LOG(INFO) << "___";
     }
 
-    std::fstream out("test.txt", std::ios_base::out | std::ios_base::app);
-    out<<"<=\n";
-    for (int i=0; i < landmarkList.landmark_size(); ++i) {
-        const NormalizedLandmark& landmark = landmarkList.landmark(i);
-        out<<static_cast<float>(landmark.x())<<" "<<static_cast<float>(landmark.y())<<" "<<static_cast<float>(landmark.z())<<"\n";
-    }
-    out<<"\n";
-    out.close();
+    // file output test
+    // std::fstream out("test.txt", std::ios_base::out | std::ios_base::app);
+    // out<<"<=\n";
+    // for (int i=0; i < landmarkList.landmark_size(); ++i) {
+    //     const NormalizedLandmark& landmark = landmarkList.landmark(i);
+    //     out<<static_cast<float>(landmark.x())<<" "<<static_cast<float>(landmark.y())<<" "<<static_cast<float>(landmark.z())<<"\n";
+    // }
+    // out<<"\n";
+    // out.close();
 
     return ::mediapipe::OkStatus();
 } // namespace mediapipe
