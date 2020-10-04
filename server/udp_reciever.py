@@ -39,10 +39,14 @@ while True:
         buffer.insert(slice_sequence,data[40:])
         
 
-        s =len(b', '.join(buffer))
+        s =len(b''.join(buffer))
 
-        if len(b', '.join(buffer)) == (frame_size+38):
-            buffer = b', '.join(buffer[:frame_size])
+
+
+        if len(b''.join(buffer)) == (frame_size):
+            buffer = b''.join(buffer[:frame_size])
+            #buffer = buffer.replace(b', ', b'')
+            #buffer = numpy.frombuffer(buffer, dtype="S")
             s = len(buffer)
             #frame_buffer.insert(slice_sequence, buffer[40:])
             frame = numpy.fromstring(buffer, dtype=numpy.uint8)
