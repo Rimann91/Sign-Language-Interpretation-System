@@ -22,7 +22,7 @@ def send_stream():
         print('Failed to create socket')
         sys.exit()
     
-    host = '192.168.1.166'
+    host = 'localhost'
     port = 8888
 
     fd = feed.video_feed()
