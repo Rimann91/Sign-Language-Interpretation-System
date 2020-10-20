@@ -69,137 +69,137 @@ class KaggleASL(object):
       raise ValueError("You must supply the path to the data directory.")
     self.path_to_data = path_to_data
 
-  def as_dataset(self, split, shuffle=False, repeat=False,
-                 serialized_prefetch_size=32, decoded_prefetch_size=32):
-    """Returns KaggleASL as a tf.data.Dataset.
+  # def as_dataset(self, split, shuffle=False, repeat=False,
+  #                serialized_prefetch_size=32, decoded_prefetch_size=32):
+  #   """Returns KaggleASL as a tf.data.Dataset.
 
-    After running this function, calling padded_batch() on the Dataset object
-    will produce batches of data, but additional preprocessing may be desired.
-    If using padded_batch, the indicator_matrix output distinguishes valid
-    from padded frames.
+  #   After running this function, calling padded_batch() on the Dataset object
+  #   will produce batches of data, but additional preprocessing may be desired.
+  #   If using padded_batch, the indicator_matrix output distinguishes valid
+  #   from padded frames.
 
-    Args:
-      split: either "train" or "test"
-      shuffle: if true, shuffles both files and examples.
-      repeat: if true, repeats the data set forever.
-      serialized_prefetch_size: the buffer size for reading from disk.
-      decoded_prefetch_size: the buffer size after decoding.
-    Returns:
-      A tf.data.Dataset object with the following structure: {
-        "images": uint8 tensor, shape [time, height, width, channels]
-        "segment_matrix": binary tensor of segments, shape [time, num_segments].
-          See one_hot_segments() for details.
-        "indicator_matrix": binary tensor indicating valid frames,
-          shape [time, 1]. If padded with zeros to align sizes, the indicator
-          marks where segments is valid.
-        "classification_target": binary tensor of classification targets,
-          shape [time, 158 classes]. More than one value in a row can be 1.0 if
-          segments overlap.
-        "example_id": a unique string id for each example, shape [].
-        "sampling_rate": the frame rate for each sequence, shape [].
-        "gt_segment_seconds": the start and end time of each segment,
-          shape [num_segments, 2].
-        "gt_segment_classes": the class labels for each segment,
-          shape [num_segments].
-        "num_segments": the number of segments in the example, shape [].
-        "num_timesteps": the number of timesteps in the example, shape [].
-    """
-    def parse_fn(sequence_example):
-      """Parses a KaggleASL example."""
-      context_features = {
-          ms.get_example_id_key(): ms.get_example_id_default_parser(),
-          ms.get_segment_start_index_key(): (
-              ms.get_segment_start_index_default_parser()),
-          ms.get_segment_end_index_key(): (
-              ms.get_segment_end_index_default_parser()),
-          ms.get_segment_label_index_key(): (
-              ms.get_segment_label_index_default_parser()),
-          ms.get_segment_label_string_key(): (
-              ms.get_segment_label_string_default_parser()),
-          ms.get_segment_start_timestamp_key(): (
-              ms.get_segment_start_timestamp_default_parser()),
-          ms.get_segment_end_timestamp_key(): (
-              ms.get_segment_end_timestamp_default_parser()),
-          ms.get_image_frame_rate_key(): (
-              ms.get_image_frame_rate_default_parser()),
-      }
+  #   Args:
+  #     split: either "train" or "test"
+  #     shuffle: if true, shuffles both files and examples.
+  #     repeat: if true, repeats the data set forever.
+  #     serialized_prefetch_size: the buffer size for reading from disk.
+  #     decoded_prefetch_size: the buffer size after decoding.
+  #   Returns:
+  #     A tf.data.Dataset object with the following structure: {
+  #       "images": uint8 tensor, shape [time, height, width, channels]
+  #       "segment_matrix": binary tensor of segments, shape [time, num_segments].
+  #         See one_hot_segments() for details.
+  #       "indicator_matrix": binary tensor indicating valid frames,
+  #         shape [time, 1]. If padded with zeros to align sizes, the indicator
+  #         marks where segments is valid.
+  #       "classification_target": binary tensor of classification targets,
+  #         shape [time, 158 classes]. More than one value in a row can be 1.0 if
+  #         segments overlap.
+  #       "example_id": a unique string id for each example, shape [].
+  #       "sampling_rate": the frame rate for each sequence, shape [].
+  #       "gt_segment_seconds": the start and end time of each segment,
+  #         shape [num_segments, 2].
+  #       "gt_segment_classes": the class labels for each segment,
+  #         shape [num_segments].
+  #       "num_segments": the number of segments in the example, shape [].
+  #       "num_timesteps": the number of timesteps in the example, shape [].
+  #   """
+  #   def parse_fn(sequence_example):
+  #     """Parses a KaggleASL example."""
+  #     context_features = {
+  #         ms.get_example_id_key(): ms.get_example_id_default_parser(),
+  #         ms.get_segment_start_index_key(): (
+  #             ms.get_segment_start_index_default_parser()),
+  #         ms.get_segment_end_index_key(): (
+  #             ms.get_segment_end_index_default_parser()),
+  #         ms.get_segment_label_index_key(): (
+  #             ms.get_segment_label_index_default_parser()),
+  #         ms.get_segment_label_string_key(): (
+  #             ms.get_segment_label_string_default_parser()),
+  #         ms.get_segment_start_timestamp_key(): (
+  #             ms.get_segment_start_timestamp_default_parser()),
+  #         ms.get_segment_end_timestamp_key(): (
+  #             ms.get_segment_end_timestamp_default_parser()),
+  #         ms.get_image_frame_rate_key(): (
+  #             ms.get_image_frame_rate_default_parser()),
+  #     }
 
-      sequence_features = {
-          ms.get_image_encoded_key(): ms.get_image_encoded_default_parser()
-      }
-      parsed_context, parsed_sequence = tf.io.parse_single_sequence_example(
-          sequence_example, context_features, sequence_features)
+  #     sequence_features = {
+  #         ms.get_image_encoded_key(): ms.get_image_encoded_default_parser()
+  #     }
+  #     parsed_context, parsed_sequence = tf.io.parse_single_sequence_example(
+  #         sequence_example, context_features, sequence_features)
 
-      sequence_length = tf.shape(parsed_sequence[ms.get_image_encoded_key()])[0]
-      num_segments = tf.shape(
-          parsed_context[ms.get_segment_label_index_key()])[0]
-      # segments matrix and targets for training.
-      segments_matrix, indicator = one_hot_segments(
-          tf.sparse_tensor_to_dense(
-              parsed_context[ms.get_segment_start_index_key()]),
-          tf.sparse_tensor_to_dense(
-              parsed_context[ms.get_segment_end_index_key()]),
-          sequence_length)
+  #     sequence_length = tf.shape(parsed_sequence[ms.get_image_encoded_key()])[0]
+  #     num_segments = tf.shape(
+  #         parsed_context[ms.get_segment_label_index_key()])[0]
+  #     # segments matrix and targets for training.
+  #     segments_matrix, indicator = one_hot_segments(
+  #         tf.sparse_tensor_to_dense(
+  #             parsed_context[ms.get_segment_start_index_key()]),
+  #         tf.sparse_tensor_to_dense(
+  #             parsed_context[ms.get_segment_end_index_key()]),
+  #         sequence_length)
 
-      classification_target = timepoint_classification_target(
-          segments_matrix,
-          tf.sparse_tensor_to_dense(
-              parsed_context[ms.get_segment_label_index_key()]
-              ) + CLASS_LABEL_OFFSET,
-          NUM_CLASSES + CLASS_LABEL_OFFSET)
+  #     classification_target = timepoint_classification_target(
+  #         segments_matrix,
+  #         tf.sparse_tensor_to_dense(
+  #             parsed_context[ms.get_segment_label_index_key()]
+  #             ) + CLASS_LABEL_OFFSET,
+  #         NUM_CLASSES + CLASS_LABEL_OFFSET)
 
-      # [segments, 2] start and end time in seconds.
-      gt_segment_seconds = tf.to_float(tf.concat(
-          [tf.expand_dims(tf.sparse_tensor_to_dense(parsed_context[
-              ms.get_segment_start_timestamp_key()]), 1),
-           tf.expand_dims(tf.sparse_tensor_to_dense(parsed_context[
-               ms.get_segment_end_timestamp_key()]), 1)],
-          1)) / float(SECONDS_TO_MICROSECONDS)
-      gt_segment_classes = tf.sparse_tensor_to_dense(parsed_context[
-          ms.get_segment_label_index_key()]) + CLASS_LABEL_OFFSET
-      example_id = parsed_context[ms.get_example_id_key()]
-      sampling_rate = parsed_context[ms.get_image_frame_rate_key()]
+  #     # [segments, 2] start and end time in seconds.
+  #     gt_segment_seconds = tf.to_float(tf.concat(
+  #         [tf.expand_dims(tf.sparse_tensor_to_dense(parsed_context[
+  #             ms.get_segment_start_timestamp_key()]), 1),
+  #          tf.expand_dims(tf.sparse_tensor_to_dense(parsed_context[
+  #              ms.get_segment_end_timestamp_key()]), 1)],
+  #         1)) / float(SECONDS_TO_MICROSECONDS)
+  #     gt_segment_classes = tf.sparse_tensor_to_dense(parsed_context[
+  #         ms.get_segment_label_index_key()]) + CLASS_LABEL_OFFSET
+  #     example_id = parsed_context[ms.get_example_id_key()]
+  #     sampling_rate = parsed_context[ms.get_image_frame_rate_key()]
 
-      images = tf.map_fn(tf.image.decode_jpeg,
-                         parsed_sequence[ms.get_image_encoded_key()],
-                         back_prop=False,
-                         dtype=tf.uint8)
+  #     images = tf.map_fn(tf.image.decode_jpeg,
+  #                        parsed_sequence[ms.get_image_encoded_key()],
+  #                        back_prop=False,
+  #                        dtype=tf.uint8)
 
-      output_dict = {
-          "segment_matrix": segments_matrix,
-          "indicator_matrix": indicator,
-          "classification_target": classification_target,
-          "example_id": example_id,
-          "sampling_rate": sampling_rate,
-          "gt_segment_seconds": gt_segment_seconds,
-          "gt_segment_classes": gt_segment_classes,
-          "num_segments": num_segments,
-          "num_timesteps": sequence_length,
-          "images": images,
-      }
-      return output_dict
+  #     output_dict = {
+  #         "segment_matrix": segments_matrix,
+  #         "indicator_matrix": indicator,
+  #         "classification_target": classification_target,
+  #         "example_id": example_id,
+  #         "sampling_rate": sampling_rate,
+  #         "gt_segment_seconds": gt_segment_seconds,
+  #         "gt_segment_classes": gt_segment_classes,
+  #         "num_segments": num_segments,
+  #         "num_timesteps": sequence_length,
+  #         "images": images,
+  #     }
+  #     return output_dict
 
-    if split not in SPLITS:
-      raise ValueError("Split %s not in %s" % split, str(list(SPLITS.keys())))
-    all_shards = tf.io.gfile.glob(
-        os.path.join(self.path_to_data, SPLITS[split][0] + "-*-of-*"))
-    random.shuffle(all_shards)
-    all_shards_dataset = tf.data.Dataset.from_tensor_slices(all_shards)
-    cycle_length = min(16, len(all_shards))
-    dataset = all_shards_dataset.apply(
-        tf.contrib.data.parallel_interleave(
-            tf.data.TFRecordDataset,
-            cycle_length=cycle_length,
-            block_length=1, sloppy=True,
-            buffer_output_elements=serialized_prefetch_size))
-    dataset = dataset.prefetch(serialized_prefetch_size)
-    if shuffle:
-      dataset = dataset.shuffle(serialized_prefetch_size)
-    if repeat:
-      dataset = dataset.repeat()
-    dataset = dataset.map(parse_fn)
-    dataset = dataset.prefetch(decoded_prefetch_size)
-    return dataset
+  #   if split not in SPLITS:
+  #     raise ValueError("Split %s not in %s" % split, str(list(SPLITS.keys())))
+  #   all_shards = tf.io.gfile.glob(
+  #       os.path.join(self.path_to_data, SPLITS[split][0] + "-*-of-*"))
+  #   random.shuffle(all_shards)
+  #   all_shards_dataset = tf.data.Dataset.from_tensor_slices(all_shards)
+  #   cycle_length = min(16, len(all_shards))
+  #   dataset = all_shards_dataset.apply(
+  #       tf.contrib.data.parallel_interleave(
+  #           tf.data.TFRecordDataset,
+  #           cycle_length=cycle_length,
+  #           block_length=1, sloppy=True,
+  #           buffer_output_elements=serialized_prefetch_size))
+  #   dataset = dataset.prefetch(serialized_prefetch_size)
+  #   if shuffle:
+  #     dataset = dataset.shuffle(serialized_prefetch_size)
+  #   if repeat:
+  #     dataset = dataset.repeat()
+  #   dataset = dataset.map(parse_fn)
+  #   dataset = dataset.prefetch(decoded_prefetch_size)
+  #   return dataset
 
   def generate_examples(self,
                         path_to_mediapipe_binary, path_to_graph_directory):
@@ -229,6 +229,7 @@ class KaggleASL(object):
     # annotation_dir, image_dir = self._download_data()
     # to:
     image_dir = os.path.join(self.path_to_data, DATA_FOLDER_IMAGES)
+    landmark_dir = os.path.join(self.path_to_data, DATA_FOLDER_LANDMARKS)
     # end of change
     # changed:
     # for name, annotations, shards, _ in SPLITS.values():
@@ -238,7 +239,7 @@ class KaggleASL(object):
     for name, shards in SPLITS.values():
       #____________CREATE ANNOTATIONS HERE______________
       logging.info("Generating annotations for split: %s", name)
-      annotation_file = self._generate_annotation(image_dir, name)
+      annotation_file = self._generate_annotation(image_dir, landmark_dir, name)
     # end of change
       logging.info("Generating landmarks for split: %s", name)
       # landmark_file = self._generate_landmarks(image_dir, name)
@@ -270,7 +271,7 @@ class KaggleASL(object):
           writers[i % len(writers)].write(seq_ex.SerializeToString())
     logging.info("Data extraction complete.")
 
-  def _generate_annotation(self, image_dir, name):
+  def _generate_annotation(self, image_dir, landmark_dir, name):
     """Generate a annotation CSV file for the images.
     
     Args:
@@ -284,7 +285,7 @@ class KaggleASL(object):
     logging.info("annotation_file_path: %s", annotation_file_path)
     annotation_list = []
     image_list = glob.glob(image_dir+"/"+name+"/"+name+"/*/*")
-    logging.info("image_list: %s", image_list)
+    logging.info("Unpacking images...")
     for image in image_list:
       id = image.split("/")[-1].split(".")[0]
       classification = image.split("/")[-2]
@@ -295,6 +296,7 @@ class KaggleASL(object):
       annotation_list.append(annotation)
     
     landmark_list = glob.glob(landmark_dir+"/*.csv")
+    logging.info("Unpacking landmarks...")
     node_list = []
     for landmark in landmark_list:
       id = landmark.split("/")[-1].split(".")[0]
@@ -328,8 +330,8 @@ class KaggleASL(object):
         metadata = tf.train.SequenceExample()
         filepath = os.path.join(image_dir_direct, "%s.jpg" % row["id"])
         landmark_list = []
-        for i in range(0,63,3):
-          point = [row["landmark"+str(i)], row["landmark"+str(i+1)], row["landmark"+str(i+2)]]
+        for i in range(0,21):
+          point = [row["landmark_x"+str(i)], row["landmark_y"+str(i)], row["landmark_z"+str(i)]]
           landmark_list.append(point)
         # actions = row["actions"].split(";")
         # action_indices = []
@@ -352,7 +354,7 @@ class KaggleASL(object):
         ms.set_class_segmentation_class_label_string([bytes23(row["class"])], metadata)
         ms.set_class_segmentation_class_label_index([bytes23(row["index"])], metadata)
         ms.set_image_data_path(bytes23(filepath), metadata)
-        ms.set_feature_dimensions(row["dimensions"], metadata)
+        ms.set_feature_dimensions(3, metadata)
         ms.set_feature_floats(landmark_list, metadata)
         # end of change
         # ms.set_clip_start_timestamp(0, metadata)
@@ -364,91 +366,91 @@ class KaggleASL(object):
         # ms.set_segment_label_index(action_indices, metadata)
         yield metadata
 
-  def _download_data(self):
-    """Downloads and extracts data if not already available."""
-    if sys.version_info >= (3, 0):
-      urlretrieve = urllib.request.urlretrieve
-    else:
-      urlretrieve = urllib.request.urlretrieve
-    logging.info("Creating data directory.")
-    tf.io.gfile.makedirs(self.path_to_data)
-#_________________________________________________DOWNLOAD LICENSE___________________________________________________
-    logging.info("Downloading license.")
-    local_license_path = os.path.join(
-        self.path_to_data, DATA_URL_LICENSE.split("/")[-1])
-    if not tf.io.gfile.exists(local_license_path):
-      urlretrieve(DATA_URL_LICENSE, local_license_path)
-#_________________________________________________DOWNLOAD ANNOTATIONS___________________________________________________
-    # logging.info("Downloading annotations.")
-    # local_annotations_path = os.path.join(
-    #     self.path_to_data, DATA_URL_ANNOTATIONS.split("/")[-1])
-    # if not tf.io.gfile.exists(local_annotations_path):
-    #   urlretrieve(DATA_URL_ANNOTATIONS, local_annotations_path)   
-#_________________________________________________DOWNLOAD IMAGES___________________________________________________
-    logging.info("Downloading images.")
-    # Changed:
-    # local_images_path = os.path.join(
-    #     self.path_to_data, DATA_URL_IMAGES.split("/")[-1])
-    # To:
-    local_images_path = os.path.join(
-        self.path_to_data, DATA_FOLDER_IMAGES)
-    # end of
-    if not tf.io.gfile.exists(local_images_path):
-      urlretrieve(DATA_URL_IMAGES, local_images_path, progress_hook)
-#_________________________________________________EXTRACT ANNOTATIONS___________________________________________________
-    # logging.info("Extracting annotations.")
-    # # return video dir and annotation_dir by removing .zip from the path.
-    # annotations_dir = local_annotations_path[:-4]
-    # if not tf.io.gfile.exists(annotations_dir):
-    #   with zipfile.ZipFile(local_annotations_path) as annotations_zip:
-    #     annotations_zip.extractall(self.path_to_data)
-#_________________________________________________EXTRACT IMAGES___________________________________________________
-    logging.info("Extracting images.")
-    image_dir = local_images_path[:-4]
-    if not tf.io.gfile.exists(image_dir):
-      with zipfile.ZipFile(local_images_path) as images_zip:
-        images_zip.extractall(self.path_to_data)
-    # changed:
-    # return annotations_dir, image_dir
-    # to:
-    return image_dir
+#   def _download_data(self):
+#     """Downloads and extracts data if not already available."""
+#     if sys.version_info >= (3, 0):
+#       urlretrieve = urllib.request.urlretrieve
+#     else:
+#       urlretrieve = urllib.request.urlretrieve
+#     logging.info("Creating data directory.")
+#     tf.io.gfile.makedirs(self.path_to_data)
+# #_________________________________________________DOWNLOAD LICENSE___________________________________________________
+#     logging.info("Downloading license.")
+#     local_license_path = os.path.join(
+#         self.path_to_data, DATA_URL_LICENSE.split("/")[-1])
+#     if not tf.io.gfile.exists(local_license_path):
+#       urlretrieve(DATA_URL_LICENSE, local_license_path)
+# #_________________________________________________DOWNLOAD ANNOTATIONS___________________________________________________
+#     # logging.info("Downloading annotations.")
+#     # local_annotations_path = os.path.join(
+#     #     self.path_to_data, DATA_URL_ANNOTATIONS.split("/")[-1])
+#     # if not tf.io.gfile.exists(local_annotations_path):
+#     #   urlretrieve(DATA_URL_ANNOTATIONS, local_annotations_path)   
+# #_________________________________________________DOWNLOAD IMAGES___________________________________________________
+#     logging.info("Downloading images.")
+#     # Changed:
+#     # local_images_path = os.path.join(
+#     #     self.path_to_data, DATA_URL_IMAGES.split("/")[-1])
+#     # To:
+#     local_images_path = os.path.join(
+#         self.path_to_data, DATA_FOLDER_IMAGES)
+#     # end of
+#     if not tf.io.gfile.exists(local_images_path):
+#       urlretrieve(DATA_URL_IMAGES, local_images_path, progress_hook)
+# #_________________________________________________EXTRACT ANNOTATIONS___________________________________________________
+#     # logging.info("Extracting annotations.")
+#     # # return video dir and annotation_dir by removing .zip from the path.
+#     # annotations_dir = local_annotations_path[:-4]
+#     # if not tf.io.gfile.exists(annotations_dir):
+#     #   with zipfile.ZipFile(local_annotations_path) as annotations_zip:
+#     #     annotations_zip.extractall(self.path_to_data)
+# #_________________________________________________EXTRACT IMAGES___________________________________________________
+#     logging.info("Extracting images.")
+#     image_dir = local_images_path[:-4]
+#     if not tf.io.gfile.exists(image_dir):
+#       with zipfile.ZipFile(local_images_path) as images_zip:
+#         images_zip.extractall(self.path_to_data)
+#     # changed:
+#     # return annotations_dir, image_dir
+#     # to:
+#     return image_dir
 
-  def _run_mediapipe(self, path_to_mediapipe_binary, sequence_example, graph):
-    """Runs MediaPipe over MediaSequence tf.train.SequenceExamples.
+  # def _run_mediapipe(self, path_to_mediapipe_binary, sequence_example, graph):
+  #   """Runs MediaPipe over MediaSequence tf.train.SequenceExamples.
 
-    Args:
-      path_to_mediapipe_binary: Path to the compiled binary for the BUILD target
-        mediapipe/examples/desktop/demo:media_sequence_demo.
-      sequence_example: The SequenceExample with metadata or partial data file.
-      graph: The path to the graph that extracts data to add to the
-        SequenceExample.
-    Returns:
-      A copy of the input SequenceExample with additional data fields added
-      by the MediaPipe graph.
-    Raises:
-      RuntimeError: if MediaPipe returns an error or fails to run the graph.
-    """
-    if not path_to_mediapipe_binary:
-      raise ValueError("--path_to_mediapipe_binary must be specified.")
-    input_fd, input_filename = tempfile.mkstemp()
-    output_fd, output_filename = tempfile.mkstemp()
-    cmd = [path_to_mediapipe_binary,
-           "--calculator_graph_config_file=%s" % graph,
-           "--input_side_packets=input_sequence_example=%s" % input_filename,
-           "--output_side_packets=output_sequence_example=%s" % output_filename]
-    with open(input_filename, "wb") as input_file:
-      input_file.write(sequence_example.SerializeToString())
-    mediapipe_output = subprocess.check_output(cmd)
-    if b"Failed to run the graph" in mediapipe_output:
-      raise RuntimeError(mediapipe_output)
-    with open(output_filename, "rb") as output_file:
-      output_example = tf.train.SequenceExample()
-      output_example.ParseFromString(output_file.read())
-    os.close(input_fd)
-    os.remove(input_filename)
-    os.close(output_fd)
-    os.remove(output_filename)
-    return output_example
+  #   Args:
+  #     path_to_mediapipe_binary: Path to the compiled binary for the BUILD target
+  #       mediapipe/examples/desktop/demo:media_sequence_demo.
+  #     sequence_example: The SequenceExample with metadata or partial data file.
+  #     graph: The path to the graph that extracts data to add to the
+  #       SequenceExample.
+  #   Returns:
+  #     A copy of the input SequenceExample with additional data fields added
+  #     by the MediaPipe graph.
+  #   Raises:
+  #     RuntimeError: if MediaPipe returns an error or fails to run the graph.
+  #   """
+  #   if not path_to_mediapipe_binary:
+  #     raise ValueError("--path_to_mediapipe_binary must be specified.")
+  #   input_fd, input_filename = tempfile.mkstemp()
+  #   output_fd, output_filename = tempfile.mkstemp()
+  #   cmd = [path_to_mediapipe_binary,
+  #          "--calculator_graph_config_file=%s" % graph,
+  #          "--input_side_packets=input_sequence_example=%s" % input_filename,
+  #          "--output_side_packets=output_sequence_example=%s" % output_filename]
+  #   with open(input_filename, "wb") as input_file:
+  #     input_file.write(sequence_example.SerializeToString())
+  #   mediapipe_output = subprocess.check_output(cmd)
+  #   if b"Failed to run the graph" in mediapipe_output:
+  #     raise RuntimeError(mediapipe_output)
+  #   with open(output_filename, "rb") as output_file:
+  #     output_example = tf.train.SequenceExample()
+  #     output_example.ParseFromString(output_file.read())
+  #   os.close(input_fd)
+  #   os.remove(input_filename)
+  #   os.close(output_fd)
+  #   os.remove(output_filename)
+  #   return output_example
 
 
 def one_hot_segments(start_indices, end_indices, num_samples):
