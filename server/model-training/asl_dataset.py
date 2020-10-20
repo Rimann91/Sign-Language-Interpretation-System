@@ -38,9 +38,11 @@ DATA_URL_ANNOTATIONS = ""
 # DATA_URL_IMAGES = "https://storage.googleapis.com/kaggle-data-sets/23079/29550/bundle/archive.zip?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20201002%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20201002T235941Z&X-Goog-Expires=259199&X-Goog-SignedHeaders=host&X-Goog-Signature=17412106bd932a59135c442a13cb282005eafa2d81ea0feb736dd5ad2ace0cd155ded4c6b24e197fb7aa90431cf39b4c92d466471dc9648a5e36bf8ca03534ff42cedec9efabcac88d70532b05b6a957b8de0c694bd7514b488bd5a34097b14fd01a67cd6673670d1b202b8284f43c6988d89b1a61be0bec394af9a3570c46b9b849d0b9931c90988676b5fa76a0f017e713912469baa843a4b402d867d37efd3bfef1c03235baf3acf2f0fb044e897b801e1db5bfaf45480dfbf6de9c10c636ac517fc2e6c919f490e3ff3d509099f5315ed6ed733687009ff1cf576c51a04bc1af22d58ec8dfc3ae3a03736d0c6a8addd9dd995ed393e7e359196d9e1f4056"
 DATA_URL_IMAGES = "https://www.kaggle.com/grassknoted/asl-alphabet?resource=download&downloadHash=4c26ddd48724c3efad045f3bd85017fce744ffa99cd55366273a939e3ac82790"
 DATA_FOLDER_IMAGES = "ASL_library"
+DATA_FOLDER_LANDMARKS = "ASL_landmarks"
+ANNOTATIONS = "ASL_annotations"
 DATA_URL_LICENSE = "http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt"
 CITATION = ""
-GRAPHS = ["clipped_images_from_file_at_24fps.pbtxt"]
+GRAPHS = ["hand_landmark_gpu.pbtxt"]
 # changed:
 # SPLITS = {
 #     "train": ("charades_v1_train_records",  # base name for sharded files
@@ -238,8 +240,10 @@ class KaggleASL(object):
       logging.info("Generating annotations for split: %s", name)
       annotation_file = self._generate_annotation(image_dir, name)
     # end of change
+      logging.info("Generating landmarks for split: %s", name)
+      # landmark_file = self._generate_landmarks(image_dir, name)
       logging.info("Generating metadata for split: %s", name)
-      all_metadata = list(self._generate_metadata(annotation_file, (image_dir+"/"+name+"/"+name)))
+      all_metadata = list(self._generate_metadata(landmark_file, annotation_file, (image_dir+"/"+name+"/"+name)))
       random.seed(47)
       random.shuffle(all_metadata)
       # changed:
@@ -258,10 +262,10 @@ class KaggleASL(object):
         for i, seq_ex in enumerate(all_metadata):
           print("Processing example %d of %d   (%d%%) \r" % (
               i, len(all_metadata), i * 100 / len(all_metadata)), end="")
-          for graph in GRAPHS:
-            graph_path = os.path.join(path_to_graph_directory, graph)
-            seq_ex = self._run_mediapipe(
-                path_to_mediapipe_binary, seq_ex, graph_path)
+          # for graph in GRAPHS:
+            # graph_path = os.path.join(path_to_graph_directory, graph)
+            # seq_ex = self._run_mediapipe(
+            #     path_to_mediapipe_binary, seq_ex, graph_path)
 
           writers[i % len(writers)].write(seq_ex.SerializeToString())
     logging.info("Data extraction complete.")
@@ -275,7 +279,8 @@ class KaggleASL(object):
       Annotation CSV file.
     """
 
-    annotation_file_path = image_dir+"/"+name+"/annotations.csv"
+    annotation_file_path = self.path_to_data+ANNOTATIONS".csv"
+    # annotation_file_path = image_dir+"/"+name+"/annotations.csv"
     logging.info("annotation_file_path: %s", annotation_file_path)
     annotation_list = []
     image_list = glob.glob(image_dir+"/"+name+"/"+name+"/*/*")
@@ -288,11 +293,26 @@ class KaggleASL(object):
           index = c
       annotation = {"id":id, "index":index, "class":classification}
       annotation_list.append(annotation)
+    
+    landmark_list = glob.glob(landmark_dir+"/*.csv")
+    node_list = []
+    for landmark in landmark_list:
+      id = landmark.split("/")[-1].split(".")[0]
+      landmark_dict = {"id":id}
+      landmark_df = pd.read_csv(landmark, header=None)
+      landmark_df.columns = ["x","y","z"]
+      landmark_dict = {[label:point for ]}
+      for column in landmark_df:
+        for i in range(0,21):
+          landmark_dict["landmark_"+str(column)+str(i)] = landmark_df.loc[i,column]
+      node_list.append(landmark_dict)
+    node_df = pd.DataFrame(node_list)
     annotation_df = pd.DataFrame(annotation_list)
+    annotation_df = pd.merge(annotation_df, node_df, on=["id"])
     annotation_df.to_csv(annotation_file_path, index=False)
     return annotation_file_path
 
-  def _generate_metadata(self, annotations_file, image_dir_direct):
+  def _generate_metadata(self, landmark_file, annotations_file, image_dir_direct):
     """For each row in the annotation CSV, generates the corresponding metadata.
 
     Args:
@@ -307,6 +327,10 @@ class KaggleASL(object):
       for row in reader:
         metadata = tf.train.SequenceExample()
         filepath = os.path.join(image_dir_direct, "%s.jpg" % row["id"])
+        landmark_list = []
+        for i in range(0,63,3):
+          point = [row["landmark"+str(i)], row["landmark"+str(i+1)], row["landmark"+str(i+2)]]
+          landmark_list.append(point)
         # actions = row["actions"].split(";")
         # action_indices = []
         # action_strings = []
@@ -324,9 +348,12 @@ class KaggleASL(object):
         # ms.set_example_id(bytes23(row["id"]), metadata)
         # ms.set_clip_data_path(bytes23(filepath), metadata)
         # to:
+        ms.set_example_id(bytes23(row["id"]), metadata)
         ms.set_class_segmentation_class_label_string([bytes23(row["class"])], metadata)
         ms.set_class_segmentation_class_label_index([bytes23(row["index"])], metadata)
         ms.set_image_data_path(bytes23(filepath), metadata)
+        ms.set_feature_dimensions(row["dimensions"], metadata)
+        ms.set_feature_floats(landmark_list, metadata)
         # end of change
         # ms.set_clip_start_timestamp(0, metadata)
         # ms.set_clip_end_timestamp(
