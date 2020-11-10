@@ -1,0 +1,48 @@
+# Copyright 2019 The MediaPipe Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Convert the string input into a decoded SequenceExample.
+node {
+  calculator: "StringToSequenceExampleCalculator"
+  input_side_packet: "STRING:input_sequence_example"
+  output_side_packet: "SEQUENCE_EXAMPLE:parsed_sequence_example"
+}
+
+# Unpack the data path and clip timing from the SequenceExample.
+node {
+  calculator: "UnpackMediaSequenceCalculator"
+  input_side_packet: "SEQUENCE_EXAMPLE:parsed_sequence_example"
+  output_side_packet: "DATA_PATH:input_image_path"
+}
+
+node {
+  calculator: "DataPathToLandMarksSubgraph"
+  input_stream: "IMAGE_PATH:input_image_path"
+  output_stream: "LANDMARKS:hand_landmarks"
+}
+
+# Store the images in the SequenceExample.
+node {
+  calculator: "PackMediaSequenceCalculator"
+  input_side_packet: "SEQUENCE_EXAMPLE:parsed_sequence_example"
+  output_side_packet: "SEQUENCE_EXAMPLE:sequence_example_to_serialize"
+  input_stream: "KEYPOINTS:hand_landmarks"
+}
+
+# Serialize the SequenceExample to a string for storage.
+node {
+  calculator: "StringToSequenceExampleCalculator"
+  input_side_packet: "SEQUENCE_EXAMPLE:sequence_example_to_serialize"
+  output_side_packet: "STRING:output_sequence_example"
+}
