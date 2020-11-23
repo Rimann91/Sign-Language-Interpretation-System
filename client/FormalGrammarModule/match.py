@@ -9,8 +9,7 @@ class ParseCommand():
         pass
 
     def get_action(self, command_df):
-        #TODO catch incorrectly identified prepositions
-        dfAction = command_df.query("TAG=='VB' or CHUNK=='I-VP'")[['WORD']]
+        dfAction = command_df.query("TAG=='VB' or TAG=='IN' or CHUNK=='I-VP'")[['WORD']]
         action = []
 
         for label, content in dfAction.WORD.items():
@@ -20,8 +19,10 @@ class ParseCommand():
         return action
 
     def get_objects(self, command_df):
-        #TODO catch adjectives of the object as well to use for identification
-        dfobject = command_df.query("TAG=='NN' or TAG=='NNS'")
+        """
+        #TODO decide if we need to catch proper nouns
+        """
+        dfobject = command_df.query("TAG=='NN' or TAG=='NNS'  or CHUNK=='I-NP'")
 
         objects = []
 
@@ -39,6 +40,15 @@ class ParseCommand():
         command = f"{action} {objects}"
         return command
 
+    def remove_prepositions(self, command_str):
+        superfluous = ['the', 'at', 'in', 'an', 'a']
+        command_lst = command_str.split(' ')
+        for word in command_lst:
+            if word in superfluous:
+                command_lst.remove(word)
+        return ' '.join(command_lst)
+
+
     def get_command(self, strInput):
 
         #TODO convert numberical number representation to alphabetical number representation
@@ -49,7 +59,11 @@ class ParseCommand():
 
         # Parse the command into action-object structure
         command = self.parse_command(corrected)
+
+        # remove unwanted prepositions
+        command = self.remove_prepositions(command)
         return command
+
 
 
 if len(sys.argv) > 1:
