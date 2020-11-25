@@ -28,3 +28,6 @@ bazel build -c opt --copt -DMESA_EGL_NO_X11_HEADERS --copt -DEGL_NO_X11 \
   RUN: 
 GLOG_logtostderr=1 bazel-bin/mediapipe/examples/desktop/hand_tracking/hand_tracking_gpu \
   --calculator_graph_config_file=mediapipe/graphs/hand_tracking/hand_tracking_mobile.pbtxt
+
+
+  Running begins mediaipe listening for input on 4433 and outputing reading on 6009. You can run python3 GestureModule.py to receive the output and classify the gesture as long as you download the model and put it in the right path. Still cleaning up some of the debug prints in the code
