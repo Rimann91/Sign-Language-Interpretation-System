@@ -1,5 +1,6 @@
 # How to install
 
+- Clone original mediapipe source https://github.com/google/mediapipe
 - Remove "_calculator" from "BUILD_calculator" and replace BUILD file in /mediapipe/graphs/hand_tracking/calculators directory.
 - Remove "_subgraphs" from "BUILD_subgraphs" and replace BUILD file in /mediapipe/graphs/hand_tracking/subgraphs directory.
 - Add "hand-gesture-recognition-calculator.cc" to /mediapipe/graphs/hand_tracking/calculators directory.
