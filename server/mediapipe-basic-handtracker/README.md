@@ -18,7 +18,7 @@ Install Dependencies:
 https://google.github.io/mediapipe/getting_started/install.html
 Python version: 
 OpenCV Version: 
-Bazel Version: 
+Bazel Version:  I believe 3.4.1
 
 bazel build -c opt --copt -DMESA_EGL_NO_X11_HEADERS --copt -DEGL_NO_X11 \
   mediapipe/examples/desktop/hand_tracking:hand_tracking_gpu
