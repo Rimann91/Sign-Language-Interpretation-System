@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 import pathlib
 from io import StringIO
+import pathlib
 
 TCP_IP = '127.0.0.1'
 TCP_PORT = 6009
@@ -68,7 +69,7 @@ def createDataset(input_string):
 #PREPARE TENSORFLOW
 print("TensorFlow version: {}".format(tf.__version__)) 
 
-model = tf.keras.models.load_model("./landmark_cnn_v1.h5", )
+model = tf.keras.models.load_model(str(pathlib.Path(__file__).parent.absolute()) + "/landmark_cnn_v1.h5", )
 
 # Check its architecture
 model.summary()
