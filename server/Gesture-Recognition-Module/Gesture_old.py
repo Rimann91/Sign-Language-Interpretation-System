@@ -37,12 +37,10 @@ def createDataset(fp):
     lm_list = []
     lm_group=[]
     for j in range(1,17):
-        print("x: " + str(df[j]))
-        print("y: " + str(df[j+21]))
-        print("z: " + str(df[j+42]))
         landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
         lm_group.append(landmark)
         if (j)%4==0:
+            print(lm_group)
             lm_list.append(lm_group)
             lm_group=[]
     for j in range(17,22):
@@ -130,57 +128,69 @@ def reformat(start):
     return finalS
 
 
-print( 'Listening for client...')
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind((TCP_IP,TCP_PORT))
-server.listen(1)
-rxset = [server]
-txset = []
 
-times = 0
+finalString = "0.487061,0.798828,0.000081,0.581543,0.702637,-0.053673,0.647461,0.600098,-0.091629,0.648926,0.509766,-0.142059,0.611328,0.491211,-0.193634,0.552246,0.447266,-0.009470,0.534668,0.310791,-0.040627,0.515625,0.232178,-0.079193,0.495605,0.162598,-0.108414,0.480225,0.449951,-0.028095,0.460205,0.300537,-0.066147,0.442139,0.203491,-0.121155,0.422852,0.119141,-0.165558,0.418213,0.476074,-0.059547,0.394043,0.335938,-0.103607,0.375977,0.242920,-0.161438,0.363281,0.157104,-0.203247,0.357666,0.521973,-0.096207,0.341064,0.412354,-0.139008,0.327881,0.339111,-0.175934,0.317383,0.261719,-0.200958"
+reformatString = "F," + reformat(finalString) #add f because the format looks for a class in beginning right now
+reformatString = reformatString.rstrip('\x00')
+print("------------------------------")
+print(reformatString)
+print("reformat------------------------- ")
+print()
+print("'" + reformatString + "'")
+print()
+classify(reformatString)
 
-while 1:
-    rxfds, txfds, exfds = select.select(rxset, txset, rxset)
-    for sock in rxfds:
-        if sock is server:
-            conn, addr = server.accept()
-            conn.setblocking(0)
-            rxset.append(conn)
-           # print( 'Connection from address:' + str(addr))
-        else:
-            try:
-                data = sock.recv(BUFFER_SIZE).decode("utf-8")
-                if ";" in data:
-                    #print ("Received all the data")
-                    param.append(data)
-                    finalString = ""
-                    for x in param:
-                        finalString = finalString + x
+# print( 'Listening for client...')
+# server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# server.bind((TCP_IP,TCP_PORT))
+# server.listen(1)
+# rxset = [server]
+# txset = []
 
-                    param = []
-                    rxset.remove(sock)
+# times = 0
 
-                    times = times + 1
-                    if times < 25:
-                        continue
-                    times = 0
-                    finalString = finalString.replace(";","")
-                    finalString = finalString.replace("value_","")
-                    reformatString = "F," + reformat(finalString) #add f because the format looks for a class in beginning right now
-                    reformatString = reformatString.rstrip('\x00')
-                    print()
-                    print("'" + reformatString + "'")
-                    print()
-                    classify(reformatString)
+# while 1:
+#     rxfds, txfds, exfds = select.select(rxset, txset, rxset)
+#     for sock in rxfds:
+#         if sock is server:
+#             conn, addr = server.accept()
+#             conn.setblocking(0)
+#             rxset.append(conn)
+#            # print( 'Connection from address:' + str(addr))
+#         else:
+#             try:
+#                 data = sock.recv(BUFFER_SIZE).decode("utf-8")
+#                 if ";" in data:
+#                     #print ("Received all the data")
+#                     param.append(data)
+#                     finalString = ""
+#                     for x in param:
+#                         finalString = finalString + x
 
-                    sock.close()
-                else:
-                    if data != "":
-                        print(data)
-                  #  print ('"' + str(data) + '"')
-                    param.append(data)
-            except:
-                print ("Connection closed by remote end")
-                param = []
-                rxset.remove(sock)
-                sock.close()
+#                     param = []
+#                     rxset.remove(sock)
+
+#                     times = times + 1
+#                     if times < 25:
+#                         continue
+#                     times = 0
+#                     finalString = finalString.replace(";","")
+#                     finalString = finalString.replace("value_","")
+#                     reformatString = "F," + reformat(finalString) #add f because the format looks for a class in beginning right now
+#                     reformatString = reformatString.rstrip('\x00')
+#                     print()
+#                     print("'" + reformatString + "'")
+#                     print()
+#                     classify(reformatString)
+
+#                     sock.close()
+#                 else:
+#                     if data != "":
+#                         print(data)
+#                   #  print ('"' + str(data) + '"')
+#                     param.append(data)
+#             except:
+#                 print ("Connection closed by remote end")
+#                 param = []
+#                 rxset.remove(sock)
+#                 sock.close()
