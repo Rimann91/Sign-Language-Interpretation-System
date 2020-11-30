@@ -60,7 +60,8 @@ unsigned char *imageBuffer = nullptr; //buffer to hold most current image
 ssize_t imageSize = 0;
 std::mutex imageBufferMutex; //mutex to block while writing and reading imageBuffer
 bool ready = false;          //helper bool so mediapipe can wait until we have at least received one full image
-
+ char *tempImageBuffer = new char[100000]();; //temp buffer that is large enough to store an entire image. used to not block mutex for each recv(). When done receiving, we copy data in here to real image buffer. 100000 should be good enought to hold all of the data
+  
 //functions for TCP Image Buffer
 void *get_in_addr(struct sockaddr *sa);
 static void print_buf(const char *title, const unsigned char *buf, size_t buf_len);
@@ -153,39 +154,30 @@ int imageBufferThread()
         ssize_t len = 0;
         char buffer[1024]; //temp buffer for holding image data
         ssize_t totalLen = 0;
-        bool calculatingSize = imageSize == 0;
-        char *tempImageBuffer = nullptr; //we fill temp image buffer to not block mutex yet
-        if (!calculatingSize)
-        {
-            tempImageBuffer = new char[imageSize]();
-        }
+       
         while ((len = recv(connection_fd, buffer, 1024, 0)) > 0)
         {
             totalLen += len;
 
-            if (calculatingSize) //if we are just calculating size dont update buffer yet
-                continue;
-
+          
             memcpy(tempImageBuffer + totalLen - len, buffer, len); //update full buffer
             memset(buffer, 0, 1024);                               //clear buffer every time just to be safe its really not needed
         }
 
-        if (calculatingSize)
-        {
-            imageSize = totalLen;
-            imageBuffer = new unsigned char[imageSize]();
-        }
-        else
-        {
+     
 
             ///MUTEX CLOSE
             imageBufferMutex.lock();
 
+            //create and save to imageBuffer to be used by mediapipe
+            imageSize = totalLen;
+            imageBuffer = new unsigned char[imageSize]();
             memcpy(imageBuffer, tempImageBuffer, imageSize);
+
             /// MUTEX OPEN
             imageBufferMutex.unlock();
             ready = true;
-        }
+        
 
         close(connection_fd);
     }
@@ -287,8 +279,8 @@ DEFINE_string(output_video_path, "",
 
         while (ready == false)
         {
-            std::cout << "no starter image yet. sleep 1 second" << std::endl;
-            sleep(1);
+            std::cout << "no starter image yet. sleep 5 seconds" << std::endl;
+            sleep(5);
         }
 
         // MUTEX CLOSE
