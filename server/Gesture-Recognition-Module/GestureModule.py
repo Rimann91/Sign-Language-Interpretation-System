@@ -156,7 +156,7 @@ while 1:
                     times = 0
                     finalString = finalString.replace(";","")
                     finalString = finalString.replace("value_","")
-                    reformatString = "F," + reformat(finalString) #add f because the format looks for a class in beginning right now
+                    reformatString = reformat(finalString) 
                     reformatString = reformatString.rstrip('\x00')
                     print()
                     print("'" + reformatString + "'")
