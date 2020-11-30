@@ -10,6 +10,7 @@ chmod +e install.sh <br />
 ./install <br /> <br />
 
 ------Dependencies must be installed separately-----
+see: https://google.github.io/mediapipe/getting_started/install.html
 
 Python version: 2.7.17 (not sure if needed still) <br />
 Python3 REQUIRED < 3.7. recommend 3.6.9 <br />
