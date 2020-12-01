@@ -15,13 +15,7 @@ FRAME_SEND_TIME = 1
 
 class server():
     def __init__(self):
-
-        try:
-            self.sock_mp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock_mp.connect((MEDIAPIP_IP, MEDIAPIPE_PORT))
-            #sock.settimeout(1)
-        except socket.error as e:
-            print(f"Failed to create TCP socket for mediapipe connection...  {e}")
+        print("init")
 
 
     def udp_recieve(self):
@@ -38,7 +32,6 @@ class server():
 
         while True:
             buffer = [b'' for x in range(FRAME_DIVISIONS)]
-            #wait_buffer = []
             current_frame = 0
             current_frames = []
             new_frame = True
@@ -58,15 +51,11 @@ class server():
                 frame_sequence = int(data[10:20].decode('utf-8'))
                 slice_size = int(data[20:30].decode('utf-8'))
                 slice_sequence = int(data[30:40].decode('utf-8'))
-                #new_slice = False
 
                 if frame_sequence == current_frame:
-                    #if data[HEADER_SIZE:] not in buffer:
                     buffer[slice_sequence] = data[HEADER_SIZE:]
                 
                 else:
-                    #wait_buffer.insert(slice_sequence, data[HEADER_SIZE:])
-                    #frame_buffer[frame_sequence].insert(slice_sequence, data[HEADER_SIZE:])
 
                     # if frame not already started
                     if frame_sequence not in current_frames:
@@ -80,10 +69,7 @@ class server():
                 if len(b''.join(buffer)) == (frame_size):
                     buffer = b''.join(buffer[:frame_size])
                     frame = numpy.fromstring(buffer, dtype=numpy.uint8)
-                    buffer = numpy.fromstring(buffer, dtype=numpy.uint8)
                     frame = frame.reshape(480,640,3)
-
-                    cv2.imshow("SERVER", frame)
 
                     if (time.time() - frame_timer) > FRAME_SEND_TIME:
                         self.tcp_sendtomp(frame)
@@ -98,11 +84,19 @@ class server():
                 break
 
     def tcp_sendtomp(self, frame):
+        print("sending to mediapipe")
+        
+        try:
+            self.sock_mp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock_mp.connect((MEDIAPIP_IP, MEDIAPIPE_PORT))
+        except socket.error as e:
+            print(f"Failed to create TCP socket for mediapipe connection...  {e}")
         
         _,frame_jpg = cv2.imencode('.jpg', frame)
-        cv2.imshow("mediapipe image",frame)
+        #cv2.imshow("mediapipe image",frame) we show the frame in mediapipe with hand detection
         try:
             self.sock_mp.sendall(frame_jpg)
+            self.sock_mp.close()
         except socket.error as e:
             print("Failed sending jpg to mediapipe... {e}")
         

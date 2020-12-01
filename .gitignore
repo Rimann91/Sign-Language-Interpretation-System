@@ -1,2 +1,6 @@
 # Ignore all python virtual environment directories
 env/
+env36_64/
+.vscode/
+__pycache__/
+
