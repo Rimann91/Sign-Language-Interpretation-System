@@ -1,3 +1,6 @@
+#Braden Bagby
+#edits: David Gray
+
 import sys
 import socket
 import select
@@ -25,44 +28,68 @@ class_names = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","
 #Input: 21 Landmarks. X0-X21,Y0-Y21,Z0-Z21
 #Output: Tensorflow DAtaset
 def createDataset(input_string):
-    lm_dataset = []
-    label_dataset = []
     df = input_string.split(",")
-
-    landmark_hand = [] #entire hand. [finger1,finger2,finger3,etc...]
-    landmark_finger_group=[] #each finger [point1,point2,point3,etc...]
-
-    #get first 4 fingers
+    lm_dataset = []
+    landmark_hand = []
+    landmark_finger_group=[]
     for j in range(0,16):
-
         landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
+        # print("landmark", j, "\n",landmark)
         landmark_finger_group.append(landmark)
-        if (j + 1)%4==0:
+        if (j+1)%4==0:
             landmark_hand.append(landmark_finger_group)
+            # print("----------------\nlandmark_finger_group\n",landmark_finger_group)
+            # print("----------------")
             landmark_finger_group=[]
-
-            #get thumb
     for j in range(16,21):
         landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
+        # print("landmark", j, "\n",landmark)
         landmark_finger_group.append(landmark)
+    # print("----------------\nlandmark_finger_group\n",landmark_finger_group)
+    # print("----------------")
     landmark_hand.append(landmark_finger_group)
-
-
+    # print("----------------\nlandmark_hand\n",landmark_hand)
     lm_dataset.append(landmark_hand)
-    label_dataset.append(9) #TODO: how can we remove this? it shouldnt be needed
-
-
-
-
-
     features = tf.ragged.constant(lm_dataset)
-    labels = tf.constant(label_dataset)
-    dataset = tf.data.Dataset.from_tensor_slices((features.to_tensor(), labels))
-    dataset = dataset.batch(batch_size=32)
+    sample = features.to_tensor()
+    # print(sample)
+    return sample
+
+
+    # lm_dataset = []
+    # label_dataset = []
+    # df = input_string.split(",")
+
+    # landmark_hand = [] #entire hand. [finger1,finger2,finger3,etc...]
+    # landmark_finger_group=[] #each finger [point1,point2,point3,etc...]
+
+    # #get first 4 fingers
+    # for j in range(0,16):
+
+    #     landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
+    #     landmark_finger_group.append(landmark)
+    #     if (j + 1)%4==0:
+    #         landmark_hand.append(landmark_finger_group)
+    #         landmark_finger_group=[]
+
+    #         #get thumb
+    # for j in range(16,21):
+    #     landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
+    #     landmark_finger_group.append(landmark)
+    # landmark_hand.append(landmark_finger_group)
+
+    # lm_dataset.append(landmark_hand)
+    # # label_dataset.append(9) #TODO: how can we remove this? it shouldnt be needed
+
+    # features = tf.ragged.constant(lm_dataset)
+    # sample = features.to_tensor()
+    # labels = tf.constant(label_dataset)
+    # dataset = tf.data.Dataset.from_tensor_slices((features.to_tensor(), labels))
+    # dataset = dataset.batch(batch_size=32)
     #print("features:",features.shape)
    # print("labels:",labels.shape)
     #print("dataset:",dataset)
-    return dataset
+    # return dataset
 
 
 
