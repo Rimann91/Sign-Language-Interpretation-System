@@ -11,7 +11,7 @@ UDP_IP="localhost"
 UDP_PORT = 8888
 MEDIAPIPE_PORT = 4433
 MEDIAPIP_IP = "localhost"
-FRAME_SEND_TIME = 1
+FRAME_SEND_TIME = 0.01
 
 class server():
     def __init__(self):

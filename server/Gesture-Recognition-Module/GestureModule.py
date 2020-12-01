@@ -21,38 +21,38 @@ TCP_PORT = 6009
 BUFFER_SIZE = 1024
 param = []
 
-class_names = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
-
+#class_names = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+class_names = ['B','L','K','R','E','D','O','Y','W','G','N','U','P']
 
 
 #Input: 21 Landmarks. X0-X21,Y0-Y21,Z0-Z21
 #Output: Tensorflow DAtaset
 def createDataset(input_string):
     df = input_string.split(",")
+
     lm_dataset = []
-    landmark_hand = []
-    landmark_finger_group=[]
+    landmark_hand = [] #entire hand. [finger1,finger2,finger3,etc...]
+    landmark_finger_group=[] #each finger [point1,point2,point3,etc...]
+
+    #get first 4 fingers
     for j in range(0,16):
         landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
-        # print("landmark", j, "\n",landmark)
+   
         landmark_finger_group.append(landmark)
         if (j+1)%4==0:
             landmark_hand.append(landmark_finger_group)
-            # print("----------------\nlandmark_finger_group\n",landmark_finger_group)
-            # print("----------------")
+
             landmark_finger_group=[]
+
+    #get thumb
     for j in range(16,21):
         landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
-        # print("landmark", j, "\n",landmark)
         landmark_finger_group.append(landmark)
-    # print("----------------\nlandmark_finger_group\n",landmark_finger_group)
-    # print("----------------")
+
     landmark_hand.append(landmark_finger_group)
-    # print("----------------\nlandmark_hand\n",landmark_hand)
     lm_dataset.append(landmark_hand)
     features = tf.ragged.constant(lm_dataset)
     sample = features.to_tensor()
-    # print(sample)
     return sample
 
 
@@ -60,10 +60,10 @@ def createDataset(input_string):
     # label_dataset = []
     # df = input_string.split(",")
 
-    # landmark_hand = [] #entire hand. [finger1,finger2,finger3,etc...]
-    # landmark_finger_group=[] #each finger [point1,point2,point3,etc...]
+    # landmark_hand = [] 
+    # landmark_finger_group=[]
 
-    # #get first 4 fingers
+    # 
     # for j in range(0,16):
 
     #     landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
@@ -72,7 +72,7 @@ def createDataset(input_string):
     #         landmark_hand.append(landmark_finger_group)
     #         landmark_finger_group=[]
 
-    #         #get thumb
+    #        
     # for j in range(16,21):
     #     landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
     #     landmark_finger_group.append(landmark)
@@ -96,7 +96,7 @@ def createDataset(input_string):
 #PREPARE TENSORFLOW
 print("TensorFlow version: {}".format(tf.__version__)) 
 
-model = tf.keras.models.load_model(str(pathlib.Path(__file__).parent.absolute()) + "/landmark_cnn_v1.h5", )
+model = tf.keras.models.load_model(str(pathlib.Path(__file__).parent.absolute()) + "/landmark_cnn_v3_colors.h5", )
 
 # Check its architecture
 model.summary()
