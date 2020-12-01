@@ -29,9 +29,16 @@ class_names = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","
 #Output: Tensorflow DAtaset
 def createDataset(input_string):
     df = input_string.split(",")
+<<<<<<< HEAD
+    lm_final = []
+    landmark_hand = [] #entire hand. [finger1,finger2,finger3,etc...]
+    landmark_finger_group=[] #each finger [point1,point2,point3,etc...]
+    # fingers 0-4 (pinky to index)
+=======
     lm_dataset = []
     landmark_hand = []
     landmark_finger_group=[]
+>>>>>>> ced24b74c35ddbb7a3912e7aa306fba3c7e19525
     for j in range(0,16):
         landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
         # print("landmark", j, "\n",landmark)
@@ -41,6 +48,10 @@ def createDataset(input_string):
             # print("----------------\nlandmark_finger_group\n",landmark_finger_group)
             # print("----------------")
             landmark_finger_group=[]
+<<<<<<< HEAD
+    # finger 5 (thumb)
+=======
+>>>>>>> ced24b74c35ddbb7a3912e7aa306fba3c7e19525
     for j in range(16,21):
         landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
         # print("landmark", j, "\n",landmark)
@@ -48,6 +59,12 @@ def createDataset(input_string):
     # print("----------------\nlandmark_finger_group\n",landmark_finger_group)
     # print("----------------")
     landmark_hand.append(landmark_finger_group)
+<<<<<<< HEAD
+    lm_final.append(landmark_hand)
+    features = tf.ragged.constant(lm_final)
+    sample = features.to_tensor()
+    return sample
+=======
     # print("----------------\nlandmark_hand\n",landmark_hand)
     lm_dataset.append(landmark_hand)
     features = tf.ragged.constant(lm_dataset)
@@ -90,6 +107,7 @@ def createDataset(input_string):
    # print("labels:",labels.shape)
     #print("dataset:",dataset)
     # return dataset
+>>>>>>> ced24b74c35ddbb7a3912e7aa306fba3c7e19525
 
 
 
