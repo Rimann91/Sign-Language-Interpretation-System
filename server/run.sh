@@ -13,11 +13,11 @@ bazel-bin/mediapipe/examples/desktop/hand_tracking/hand_tracking_gpu   --calcula
 pids+=($!)
 echo ""
 echo "Starting python UDP receiver"
-python3 ../Sign-Language-Interpretation-System/server/udp_reciever.py &
+python3 ../udp_reciever.py &
 pids+=($!)
 echo ""
 echo "Starting Gesture Interpret Model"
-python3 ../Sign-Language-Interpretation-System/server/Gesture-Recognition-Module/GestureModule.py
+python3 ../Gesture-Recognition-Module/GestureModule.py
 
 
 

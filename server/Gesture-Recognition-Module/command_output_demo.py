@@ -6,10 +6,10 @@ def control_lights(state):
 
 
 def toggle_lights(command):
-    if command == "block":
+    if command == "idea":
         control_lights("toggle_lights_kitchen")
         print("Sending toggle request on")
-    if command == "light":
+    if command == "block":
         control_lights("toggle_lights_kitchen")
         print("Sending toggle request off")
     else:
