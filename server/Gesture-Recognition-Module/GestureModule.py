@@ -1,4 +1,4 @@
-#Braden Bagby
+#created: Braden Bagby
 #edits: David Gray
 
 import sys
@@ -17,16 +17,22 @@ from io import StringIO
 import pathlib
 import time
 
+import match
+
+
+
+
+
 TCP_IP = '127.0.0.1'
 TCP_PORT = 6009
 BUFFER_SIZE = 1024
 param = []
 
-ACCEPTANCE_THRESHOLD = 97.2 #if guess isnt 80% sure, mark as no hand
+ACCEPTANCE_THRESHOLD = 80 #97.2 #if guess isnt 80% sure, mark as no hand
 
-#class_names = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
-#class_names = ['B','L','K','R','E','D','O','Y','W','G','N','U','P']
-class_names = ['A','B','C','D','E','F','H','I','K','L','O','P','Q','W']
+#class_names = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"] for landmark_cnn_v2
+#class_names = ['B','L','K','R','E','D','O','Y','W','G','N','U','P'] for landmark_cnn_v3_colors
+class_names = ['A','B','C','D','E','F','H','I','K','L','O','P','Q','W'] #for landmar_cnn_v4_best_letters
 
 
 #Input: 21 Landmarks. X0-X21,Y0-Y21,Z0-Z21
@@ -39,6 +45,7 @@ def createDataset(input_string):
     lm_final = []
     landmark_hand = [] #entire hand. [finger1,finger2,finger3,etc...]
     landmark_finger_group=[] #each finger [point1,point2,point3,etc...]
+
     # fingers 0-4 (pinky to index)
     for j in range(0,16):
         landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
@@ -46,7 +53,6 @@ def createDataset(input_string):
         landmark_finger_group.append(landmark)
         if (j+1)%4==0:
             landmark_hand.append(landmark_finger_group)
-
             landmark_finger_group=[]
 
     # finger 5 (thumb)
@@ -63,49 +69,10 @@ def createDataset(input_string):
     return sample
 
 
-
-    # lm_dataset = []
-    # label_dataset = []
-    # df = input_string.split(",")
-
-    # landmark_hand = [] 
-    # landmark_finger_group=[]
-
-    # 
-    # for j in range(0,16):
-
-    #     landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
-    #     landmark_finger_group.append(landmark)
-    #     if (j + 1)%4==0:
-    #         landmark_hand.append(landmark_finger_group)
-    #         landmark_finger_group=[]
-
-    #        
-    # for j in range(16,21):
-    #     landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
-    #     landmark_finger_group.append(landmark)
-    # landmark_hand.append(landmark_finger_group)
-
-    # lm_dataset.append(landmark_hand)
-    # # label_dataset.append(9) #TODO: how can we remove this? it shouldnt be needed
-
-    # features = tf.ragged.constant(lm_dataset)
-    # sample = features.to_tensor()
-    # labels = tf.constant(label_dataset)
-    # dataset = tf.data.Dataset.from_tensor_slices((features.to_tensor(), labels))
-    # dataset = dataset.batch(batch_size=32)
-    #print("features:",features.shape)
-   # print("labels:",labels.shape)
-    #print("dataset:",dataset)
-    # return dataset
-
-
-
-
 #PREPARE TENSORFLOW
 print("TensorFlow version: {}".format(tf.__version__)) 
 
-model = tf.keras.models.load_model(str(pathlib.Path(__file__).parent.absolute()) + "/landmark_cnn_v4_best_letters.h5", )
+model = tf.keras.models.load_model(str(pathlib.Path(__file__).parent.absolute()) + "/models/landmark_cnn_v4_best_letters.h5", )
 
 # Check its architecture
 model.summary()
@@ -116,7 +83,9 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 #Input: dataset
 #Output: Prints prediction
+
 def classify(s):
+
     newSet = createDataset(s)
     pred = model.predict(newSet)
    
@@ -126,7 +95,9 @@ def classify(s):
     if threshold < ACCEPTANCE_THRESHOLD:
         return "_"
 
-    return class_names[res]
+    char = class_names[res]
+    return char
+
   
 
 
@@ -134,22 +105,22 @@ def classify(s):
 
 lastChar = ''
 currentWord = ""
-lastWord = ""
 skipCount = 0
-SKIP_TIMES = 7
+SKIP_TIMES = 3
 #adds a character and keeps track of detected words or commands
 def addCharToGuess(char):
-    print("---" +char)
+    print("--->" +char)
     global lastChar
     global currentWord
-    global lastWord
     global skipCount
 
     if skipCount > SKIP_TIMES: #end word
-        lastWord = currentWord
         print("word complete: " + currentWord)
-        currentWord = ""
+
         skipCount = 0
+        match.matchWord(currentWord)
+        currentWord = ""
+     
 
 
     if lastChar == char or char == '_':
@@ -157,6 +128,7 @@ def addCharToGuess(char):
         skipCount = skipCount + 1
         return
 
+    skipCount = 0
     lastChar = char
     currentWord = currentWord + char
     print(currentWord)
@@ -234,7 +206,7 @@ while 1:
                     rxset.remove(sock)
 
                     times = times + 1
-                    if times < 20:
+                    if times < 43:
                         continue
                     times = 0
 
@@ -243,20 +215,14 @@ while 1:
                     finalString = finalString.replace("value_","")
                     reformatString = reformat(finalString) 
                     reformatString = reformatString.rstrip('\x00')
-                    # print()
-                    # print("'" + reformatString + "'")
-                    # print()
 
                     guessChar = classify(reformatString)
-                    #print(guessChar)
+
                     addCharToGuess(guessChar)
 
 
                     sock.close()
                 else:
-                    #if data != "":
-                       # print(data)
-                  #  print ('"' + str(data) + '"')
                     param.append(data)
             except:
                 print ("Connection closed by remote end")
