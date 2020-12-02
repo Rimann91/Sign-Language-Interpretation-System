@@ -12,11 +12,11 @@ FFmpeg <br />
 
 *Note: all steps should be executed from the server directory of SLIS*
 
-2. run install under server folder
-`$chmod +x ./install.sh`
-`$install.sh`
+2. run install under server folder <br>
+`$chmod +x ./install.sh` <br>
+`$install.sh` <br> <br>
 
-3. Run Server:
-`$chmod +x ./run.sh`
-`$run.sh`
+3. Run Server: <br>
+`$chmod +x ./run.sh` <br>
+`$run.sh` <br>
 
