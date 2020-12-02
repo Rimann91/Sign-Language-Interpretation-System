@@ -56,3 +56,19 @@ Final system will look like this when completed
 
 ## Model Training
 
+## Demos
+
+Turn light on and off with command: idea and black: <br>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/SfzaRuzIsD8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<br>
+<br>
+Say hi Iqbal. (Dr. Iqbal is the proffesor): <br>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/pjP36tcUtyw" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<br><br>
+Demo Grammar Module:<br>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/snQtOAO4r9A" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<br>
+<br>
+Demo UDP Video Stream:<br>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Syspn-O6Vc0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
