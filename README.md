@@ -47,3 +47,9 @@ The current client has only been tested on Windows 10. Currently the only versio
 
 3. Install Dependancies
 `pip install -r requirements.txt`
+
+
+## Overview
+
+Final system will look like this when completed
+![Alt text](system_architecture.png?raw=true "Title")
