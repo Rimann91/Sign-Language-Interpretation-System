@@ -60,14 +60,14 @@ Final system will look like this when completed
 Each demo click to go to youtube video <br><br>
 
 Turn light on and off with command: idea and black: <br>
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/SfzaRuzIsD8/0.jpg)](https://www.youtube.com/watch?v=SfzaRuzIsD8)
 <br>
 <br>
 Say hi Iqbal. (Dr. Iqbal is the proffesor): <br>
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/pjP36tcUtyw/0.jpg)](https://www.youtube.com/watch?v=pjP36tcUtyw)
 <br><br>
 Demo Grammar Module:<br>
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/snQtOAO4r9A/0.jpg)](https://www.youtube.com/watch?v=snQtOAO4r9A)
 <br>
 <br>
 Demo UDP Video Stream:<br>
