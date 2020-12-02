@@ -11,7 +11,7 @@ UDP_IP="localhost"
 UDP_PORT = 8888
 MEDIAPIPE_PORT = 4433
 MEDIAPIP_IP = "localhost"
-FRAME_SEND_TIME = 1
+FRAME_SEND_TIME = 0.033 #30 frames / second
 
 class server():
     def __init__(self):
@@ -38,6 +38,7 @@ class server():
 
             while True:
                 data, addr = sock.recvfrom(46120)
+
 
                 if new_frame or (time.time()-timeout>FRAME_TIMEOUT):
                     current_frame = int(data[10:20].decode('utf-8'))
@@ -83,8 +84,9 @@ class server():
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
+
     def tcp_sendtomp(self, frame):
-        print("sending to mediapipe")
+       
         
         try:
             self.sock_mp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -93,7 +95,7 @@ class server():
             print(f"Failed to create TCP socket for mediapipe connection...  {e}")
         
         _,frame_jpg = cv2.imencode('.jpg', frame)
-        #cv2.imshow("mediapipe image",frame) we show the frame in mediapipe with hand detection
+        #cv2.imshow("mediapipe image",frame) #we show the frame in mediapipe with hand detection
         try:
             self.sock_mp.sendall(frame_jpg)
             self.sock_mp.close()
