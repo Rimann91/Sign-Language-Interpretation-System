@@ -57,19 +57,18 @@ Final system will look like this when completed
 ## Model Training
 
 ## Demos
-<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+Each demo click to go to youtube video <br><br>
+
 Turn light on and off with command: idea and black: <br>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/SfzaRuzIsD8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
 <br>
 <br>
 Say hi Iqbal. (Dr. Iqbal is the proffesor): <br>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/pjP36tcUtyw" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
 <br><br>
 Demo Grammar Module:<br>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/snQtOAO4r9A" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
 <br>
 <br>
 Demo UDP Video Stream:<br>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Syspn-O6Vc0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-</svg>
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/Syspn-O6Vc0/0.jpg)](https://www.youtube.com/watch?v=Syspn-O6Vc0)
