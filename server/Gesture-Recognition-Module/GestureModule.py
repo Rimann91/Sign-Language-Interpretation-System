@@ -72,7 +72,7 @@ def createDataset(input_string):
 #PREPARE TENSORFLOW
 print("TensorFlow version: {}".format(tf.__version__)) 
 
-model = tf.keras.models.load_model(str(pathlib.Path(__file__).parent.absolute()) + "/models/landmark_cnn_v4_best_letters.h5", )
+model = tf.keras.models.load_model(str(pathlib.Path(__file__).parent.absolute()) + "/../model-training/models/landmark_cnn_v4_best_letters.h5", )
 
 # Check its architecture
 model.summary()
