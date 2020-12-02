@@ -15,14 +15,18 @@ import numpy as np
 import pathlib
 from io import StringIO
 import pathlib
+import time
 
 TCP_IP = '127.0.0.1'
 TCP_PORT = 6009
 BUFFER_SIZE = 1024
 param = []
 
+ACCEPTANCE_THRESHOLD = 97.2 #if guess isnt 80% sure, mark as no hand
+
 #class_names = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
-class_names = ['B','L','K','R','E','D','O','Y','W','G','N','U','P']
+#class_names = ['B','L','K','R','E','D','O','Y','W','G','N','U','P']
+class_names = ['A','B','C','D','E','F','H','I','K','L','O','P','Q','W']
 
 
 #Input: 21 Landmarks. X0-X21,Y0-Y21,Z0-Z21
@@ -30,11 +34,12 @@ class_names = ['B','L','K','R','E','D','O','Y','W','G','N','U','P']
 def createDataset(input_string):
     df = input_string.split(",")
 
-    lm_dataset = []
+
+  
+    lm_final = []
     landmark_hand = [] #entire hand. [finger1,finger2,finger3,etc...]
     landmark_finger_group=[] #each finger [point1,point2,point3,etc...]
-
-    #get first 4 fingers
+    # fingers 0-4 (pinky to index)
     for j in range(0,16):
         landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
    
@@ -44,16 +49,19 @@ def createDataset(input_string):
 
             landmark_finger_group=[]
 
-    #get thumb
+    # finger 5 (thumb)
     for j in range(16,21):
         landmark = [float(df[j]), float(df[j+21]), float(df[j+42])]
         landmark_finger_group.append(landmark)
 
     landmark_hand.append(landmark_finger_group)
-    lm_dataset.append(landmark_hand)
-    features = tf.ragged.constant(lm_dataset)
+
+
+    lm_final.append(landmark_hand)
+    features = tf.ragged.constant(lm_final)
     sample = features.to_tensor()
     return sample
+
 
 
     # lm_dataset = []
@@ -93,10 +101,11 @@ def createDataset(input_string):
 
 
 
+
 #PREPARE TENSORFLOW
 print("TensorFlow version: {}".format(tf.__version__)) 
 
-model = tf.keras.models.load_model(str(pathlib.Path(__file__).parent.absolute()) + "/landmark_cnn_v3_colors.h5", )
+model = tf.keras.models.load_model(str(pathlib.Path(__file__).parent.absolute()) + "/landmark_cnn_v4_best_letters.h5", )
 
 # Check its architecture
 model.summary()
@@ -110,13 +119,47 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 def classify(s):
     newSet = createDataset(s)
     pred = model.predict(newSet)
-   # print("===")
+   
     res = np.argmax(pred[0])
-   # print(res)
-    print(class_names[res])
-   # print()
-    print()
+    threshold = pred[0][res] * 100.0 #percent of greatest guess
 
+    if threshold < ACCEPTANCE_THRESHOLD:
+        return "_"
+
+    return class_names[res]
+  
+
+
+
+
+lastChar = ''
+currentWord = ""
+lastWord = ""
+skipCount = 0
+SKIP_TIMES = 7
+#adds a character and keeps track of detected words or commands
+def addCharToGuess(char):
+    print("---" +char)
+    global lastChar
+    global currentWord
+    global lastWord
+    global skipCount
+
+    if skipCount > SKIP_TIMES: #end word
+        lastWord = currentWord
+        print("word complete: " + currentWord)
+        currentWord = ""
+        skipCount = 0
+
+
+    if lastChar == char or char == '_':
+        lastChar = char
+        skipCount = skipCount + 1
+        return
+
+    lastChar = char
+    currentWord = currentWord + char
+    print(currentWord)
 
 
 #input: 21 Landmarks each point on separate line. CSV Format
@@ -191,9 +234,11 @@ while 1:
                     rxset.remove(sock)
 
                     times = times + 1
-                    if times < 25:
+                    if times < 20:
                         continue
                     times = 0
+
+
                     finalString = finalString.replace(";","")
                     finalString = finalString.replace("value_","")
                     reformatString = reformat(finalString) 
@@ -201,7 +246,11 @@ while 1:
                     # print()
                     # print("'" + reformatString + "'")
                     # print()
-                    classify(reformatString)
+
+                    guessChar = classify(reformatString)
+                    #print(guessChar)
+                    addCharToGuess(guessChar)
+
 
                     sock.close()
                 else:

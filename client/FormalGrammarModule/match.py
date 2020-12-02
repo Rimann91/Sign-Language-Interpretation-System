@@ -2,6 +2,7 @@ import sys
 from pattern.en import parse, pprint
 from autocorrect import Speller
 from pandas import DataFrame
+import command_output_demo
 
 
 class ParseCommand():
@@ -74,6 +75,7 @@ if len(sys.argv) > 1:
             for c in test:
                 command = parser.get_command(c)
                 print(f"{c} -> {command}")
+                command_output_demo.toggle_lights(command)
 
     if sys.argv[1] == "key":
         while True:
@@ -81,6 +83,7 @@ if len(sys.argv) > 1:
             if test != 'q':
                 command = parser.get_command(test)
                 print(f"{test} -> {command}")
+                command_output_demo.toggle_lights(command)
             else: break
 
     else: print("argument error: enter a valid argument for match.py")

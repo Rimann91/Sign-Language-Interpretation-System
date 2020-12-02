@@ -84,7 +84,7 @@ class server():
                 break
 
     def tcp_sendtomp(self, frame):
-        print("sending to mediapipe")
+       
         
         try:
             self.sock_mp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

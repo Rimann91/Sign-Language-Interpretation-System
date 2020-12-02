@@ -146,7 +146,7 @@ int imageBufferThread()
         inet_ntop(their_addr.ss_family,
                   get_in_addr((struct sockaddr *)&their_addr),
                   s, sizeof s);
-        printf("server: got connection from %s\n", s);
+       // printf("server: got connection from %s\n", s);
 
         ////This while loop opens from connection, closes imageBufferMutex, fills imageBuffer, opensImageBufferMutex
 
