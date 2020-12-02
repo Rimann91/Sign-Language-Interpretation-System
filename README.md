@@ -63,7 +63,7 @@ Turn light on and off with command: idea and black: <br>
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/SfzaRuzIsD8/0.jpg)](https://www.youtube.com/watch?v=SfzaRuzIsD8)
 <br>
 <br>
-Say hi Iqbal. (Dr. Iqbal is the proffesor): <br>
+Say hi Iqbal. (Dr. Iqbal is the professor): <br>
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/pjP36tcUtyw/0.jpg)](https://www.youtube.com/watch?v=pjP36tcUtyw)
 <br><br>
 Demo Grammar Module:<br>
