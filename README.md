@@ -52,4 +52,7 @@ The current client has only been tested on Windows 10. Currently the only versio
 ## Overview
 
 Final system will look like this when completed
-![Alt text](system_architecture.png?raw=true "Title")
+![Alt text](resource/system_architecture.png?raw=true "Title")
+
+## Model Training
+
