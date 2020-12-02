@@ -57,7 +57,7 @@ Final system will look like this when completed
 ## Model Training
 
 ## Demos
-
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
 Turn light on and off with command: idea and black: <br>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/SfzaRuzIsD8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 <br>
@@ -72,3 +72,4 @@ Demo Grammar Module:<br>
 Demo UDP Video Stream:<br>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/Syspn-O6Vc0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+</svg>
