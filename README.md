@@ -17,7 +17,6 @@ Python3 REQUIRED < 3.7. recommend 3.6.9 <br />
 Bazel REQUIRED: 3.4.1 <br />
 OpenCV <br />
 FFmpeg <br />
-Tensorflow 2.4.0-rc2 or similar
 
 *Note: all steps should be executed from the server directory of SLIS*
 
