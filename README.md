@@ -53,9 +53,9 @@ WINDOWS:
 **Method 1**
 from powershell console, `cd` into the "client" directory. From there run the follwing command:
 
-`.\build_environment.ps1 "path/to/python368/32bit/python.exe`
+`.\build_environment.ps1 "path/to/python368/32bit/python.exe"`
 
-If this fails attempt method 2 to manually set up the environment
+*If this fails try method 2 to manually set up the environment*
 
 **Method 2**
 
