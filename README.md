@@ -25,7 +25,6 @@ FFmpeg <br />
 `$install.sh` <br> <br>
 
 3. Run Server: <br>
-`$chmod +x ./run.sh` <br>
 `$run.sh` <br>
 
 
@@ -36,9 +35,20 @@ The current client has only been tested on Windows 10. Currently the only versio
 
 ### Setup Steps
 
-
 *Note: all steps should be executed from the client directory of SLIS*
 
+LINUX:<br>
+
+1. run install under client folder <br>
+`$chmod +x ./install.sh` <br>
+`$install.sh` <br> <br>
+
+2. Run Server: <br>
+`$run.sh` <br>
+<br><br>
+
+
+WINDOWS: 
 1. Create a new Python virtual environment
 `$path/to/python368/32bit/python.exe -m virtualenv env`
 

@@ -57,4 +57,5 @@ pip3 install -r Gesture-Recognition-Module/requirements.txt
 
 
 echo ""
+chmod +x run.sh
 echo "Install successful"

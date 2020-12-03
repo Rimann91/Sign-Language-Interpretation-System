@@ -18,7 +18,6 @@ Tensorflow 2.4.0-rc2 or similar. Is installed automatically in install script
 `$install.sh` <br> <br>
 
 3. Run Server: <br>
-`$chmod +x ./run.sh` <br>
 `$run.sh` <br>
 
 
@@ -28,3 +27,4 @@ Tensorflow version must be around: 2.4.0rc2 to read the model correclty (model-t
 Bazel MUST be version 3.4.1 (or maybe sooner)
 Python MUST be less than 3.7 to work with tensorflow
 pip3 and python3 must be in your path for python
+
