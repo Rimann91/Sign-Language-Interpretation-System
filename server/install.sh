@@ -49,5 +49,12 @@ echo "Building"
 cd mediapipe
 bazel build -c opt --copt -DMESA_EGL_NO_X11_HEADERS --copt -DEGL_NO_X11   mediapipe/examples/desktop/hand_tracking:hand_tracking_gpu
 
-echo "to run: bazel-bin/mediapipe/examples/desktop/hand_tracking/hand_tracking_gpu   --calculator_graph_config_file=mediapipe/graphs/hand_tracking/hand_tracking_mobile.pbtxt"
+echo "to run mediapipe standalone: bazel-bin/mediapipe/examples/desktop/hand_tracking/hand_tracking_gpu   --calculator_graph_config_file=mediapipe/graphs/hand_tracking/hand_tracking_mobile.pbtxt"
+echo ""
+echo "configuring python dependencies: "
+cat Gesture-Recognition-Module/requirements.txt
+pip3 install -r Gesture-Recognition-Module/requirements.txt
 
+
+echo ""
+echo "Install successful"
