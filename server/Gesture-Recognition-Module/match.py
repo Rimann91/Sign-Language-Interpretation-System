@@ -7,6 +7,7 @@ import command_output_demo
 
 
 
+# Function to tag specific verbs and action words and arrange them in a dataframe
 def get_action(command_df):
     dfAction = command_df.query("TAG=='VB' or TAG=='IN' or CHUNK=='I-VP'")[['WORD']]
     action = []
@@ -17,10 +18,8 @@ def get_action(command_df):
     action = ' '.join(action)
     return action
 
+# Function to tag specific nouns and descriptive nouns and arrange them in a dataframe
 def get_objects(command_df):
-    """
-    #TODO decide if we need to catch proper nouns
-    """
     dfobject = command_df.query("TAG=='NN' or TAG=='NNS'  or CHUNK=='I-NP'")
 
     objects = []
@@ -41,6 +40,7 @@ def parse_command(strInput):
     command = f"{action} {objects}"
     return command
 
+# Function to remove any unwanted or unnecessary prepositions
 def remove_prepositions(command_str):
     superfluous = ['the', 'at', 'in', 'an', 'a']
     command_lst = command_str.split(' ')
@@ -53,8 +53,6 @@ def remove_prepositions(command_str):
 def get_command(strInput):
 
     strInput = strInput.lower()
-
-    #TODO convert numberical number representation to alphabetical number representation
         
     # Autocorrect Spelling    
     check = Speller(lang='en')
@@ -67,11 +65,16 @@ def get_command(strInput):
     command = remove_prepositions(command)
     return command
 
+# Output the command given and perform the smart home command
 def matchWord(word):
     command = get_command(word)
     command = command.replace(" ","")
     print("command: " + command)
     command_output_demo.toggle_lights(command)
+
+
+
+# Below was used for further testing
 
 # if len(sys.argv) > 1:
 #     parser = ParseCommand()
