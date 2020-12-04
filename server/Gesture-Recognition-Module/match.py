@@ -14,6 +14,10 @@
 
 # Created by Zach Langford and Riley Hughes
 
+"""
+Funtional Requirments: 8,9,10
+Non-Functinal Requirements: 3
+"""
 
 import sys
 from pattern.en import parse, pprint

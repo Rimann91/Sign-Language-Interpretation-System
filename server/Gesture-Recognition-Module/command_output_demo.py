@@ -14,7 +14,10 @@
 
 # Created by Zach Langford and Riley Hughes
 
-
+"""
+Functional Requirement 11
+Non Functional requirement 5
+"""
 import requests
 
 # Interaction between IFTTT and the software to trigger the smart home event
